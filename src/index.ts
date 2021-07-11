@@ -5,9 +5,13 @@ import { buildSchema, Resolver, Query } from "type-graphql";
 
 @Resolver()
 class HelloResolver {
-  @Query(() => String)
+  @Query(() => String , {name : "helloWorld" , nullable : true})
   async helloWorld() {
     return "Hello World!";
+  }
+  @Query(() => String , {name : "newWorld" , nullable : true})
+  async newWorld(){
+    return 'this is new world'
   }
 }
 

@@ -1,23 +1,84 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import * as Express from "express";
-import { buildSchema, Resolver, Query } from "type-graphql";
+import { buildSchema, Resolver, Query , ID  , ObjectType , Field, ArgsType, Args} from "type-graphql";
 
+
+const users = [
+  {
+    name : "krish kashiwala",
+    // thoughts : [
+    //   {
+    //     left : "bad",
+    //     right : "good"
+    //   }
+    // ]
+    type : "small brother"
+  },
+  {
+    name : "vansh kashiwala",
+    // thoughts : [
+    //   {
+    //     left : "bad",
+    //     right : "good"
+    //   }
+    // ]
+    type : "big brother"
+  }
+]
+// custom learning experience
+@ObjectType()
+class User{
+  @Field({nullable : true})
+  name : string
+  @Field()
+  type : string
+  // @Field({nullable : true})
+  // thoughts : [Rate]
+}
+
+// args type object
+@ArgsType()
+class userArgs {
+  @Field( {nullable : true})
+  name : string
+  @Field(  {nullable : true})
+  type : string
+}
+
+
+// @ObjectType()
+// class Rate{
+//   @Field({nullable : true})
+//   left : string
+//   @Field({nullable : true})
+//   right : string
+// }
+// console.log(ID)
+
+// query resolvers
 @Resolver()
 class HelloResolver {
-  @Query(() => String , {name : "helloWorld" , nullable : true})
+  @Query(() => ID , {name : "helloWorld" , nullable : true})
   async helloWorld() {
-    return "Hello World!";
+    return 'this is hello world strings';
   }
-  @Query(() => String , {name : "newWorld" , nullable : true})
-  async newWorld(){
-    return 'this is new world'
+  private userInfo : User[] = users
+  @Query(() => [User])
+  async Users(
+    @Args() {name} : userArgs
+  ): Promise<User[]> {
+    return this.userInfo.filter(user => user.name === name)
   }
 }
 
+// mutation resolvers
+
+
+
 const main = async () => {
   const schema = await buildSchema({
-    resolvers: [HelloResolver]
+    resolvers : [HelloResolver], dateScalarMode : "timestamp"
   });
 
   const apolloServer = new ApolloServer({ schema });
